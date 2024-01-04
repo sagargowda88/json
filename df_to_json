@@ -22,13 +22,17 @@ def convert_df_to_json(df):
             # If column type is object, create a mapping with variations of each value
             unique_values = df[column_name].unique()
 
-            # Join the three values with commas and on the same line
-            mapping_values = {str(value): [', '.join([value, value + 's', value + 'es'])] for value in unique_values}
+            # Remove backslashes from mapping values and join them on the same line
+            mapping_values = {str(value): ['","'.join([v.replace('\\', '') for v in [value, value + 's', value + 'es']])] for value in unique_values}
             column_info['mapping'] = mapping_values
 
         # Always add keywords for all columns
         keywords = [column_name.lower(), column_name.replace('_', ' ').lower()]
-        column_info['keywords'] = [','.join(keywords)]
+       
+        #column_info['keywords'] = keywords
+        #column_info['keywords'] = [','.join(keywords)]
+        column_info['keywords'] = ['","'.join(keywords)]
+
 
         # Add "summable" key for integer columns
         if pd.api.types.is_integer_dtype(dtype):
@@ -43,6 +47,9 @@ def convert_df_to_json(df):
 
 # Convert DataFrame to JSON
 result_json = convert_df_to_json(df)
+
+# Replace backslashes from the entire JSON string
+result_json = result_json.replace('\\', '')
 
 # Print the resulting JSON
 print(result_json)
