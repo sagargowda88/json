@@ -1,0 +1,48 @@
+import pandas as pd
+import json
+
+# Sample DataFrame (replace this with your actual DataFrame)
+data = {
+    'Nationality': ['national', 'foreigner', 'national', 'foreigner', 'national', 'foreigner', 'national', 'foreigner'],
+    'Gender': ['male', 'female', 'male', 'female', 'male', 'female', 'male', 'female'],
+    'Cancer site': ['Lung', 'Breast', 'Colorectal', 'Prostate', 'Liver', 'pancreas', 'Leg', 'Hands'],
+    'Death Count': [100, 50, 75, 25, 55, 66, 77, 88]
+}
+
+df = pd.DataFrame(data)
+
+# Function to convert DataFrame to JSON
+def convert_df_to_json(df):
+    json_output = {'name': 'Cancer Death', 'columns': []}
+
+    for column_name, dtype in df.dtypes.items():
+        column_info = {'name': column_name}
+
+        if dtype == 'object':
+            # If column type is object, create a mapping with variations of each value
+            unique_values = df[column_name].unique()
+
+            # Join the three values with commas and on the same line
+            mapping_values = {str(value): [', '.join([value, value + 's', value + 'es'])] for value in unique_values}
+            column_info['mapping'] = mapping_values
+
+        # Always add keywords for all columns
+        keywords = [column_name.lower(), column_name.replace('_', ' ').lower()]
+        column_info['keywords'] = [','.join(keywords)]
+
+        # Add "summable" key for integer columns
+        if pd.api.types.is_integer_dtype(dtype):
+            column_info['summable'] = True
+
+        json_output['columns'].append(column_info)
+
+    # Convert DataFrame to JSON with adjusted formatting
+    result_json = json.dumps(json_output, ensure_ascii=False, separators=(',', ':'), indent=4)
+    
+    return result_json
+
+# Convert DataFrame to JSON
+result_json = convert_df_to_json(df)
+
+# Print the resulting JSON
+print(result_json)
