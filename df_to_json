@@ -1,7 +1,7 @@
 import pandas as pd
 import json
 
-# Sample DataFrame (replace this with your actual DataFrame)
+
 data = {
     'Nationality': ['national', 'foreigner', 'national', 'foreigner', 'national', 'foreigner', 'national', 'foreigner'],
     'Gender': ['male', 'female', 'male', 'female', 'male', 'female', 'male', 'female'],
@@ -11,7 +11,7 @@ data = {
 
 df = pd.DataFrame(data)
 
-# Function to convert DataFrame to JSON
+
 def convert_df_to_json(df):
     json_output = {'name': 'Cancer Death', 'columns': []}
 
@@ -19,22 +19,21 @@ def convert_df_to_json(df):
         column_info = {'name': column_name}
 
         if dtype == 'object':
-            # If column type is object, create a mapping with variations of each value
+            
             unique_values = df[column_name].unique()
 
-            # Remove backslashes from mapping values and join them on the same line
+            
             mapping_values = {str(value): ['","'.join([v.replace('\\', '') for v in [value, value + 's', value + 'es']])] for value in unique_values}
             column_info['mapping'] = mapping_values
 
         # Always add keywords for all columns
         keywords = [column_name.lower(), column_name.replace('_', ' ').lower()]
        
-        #column_info['keywords'] = keywords
-        #column_info['keywords'] = [','.join(keywords)]
+        
         column_info['keywords'] = ['","'.join(keywords)]
 
 
-        # Add "summable" key for integer columns
+        
         if pd.api.types.is_integer_dtype(dtype):
             column_info['summable'] = True
 
